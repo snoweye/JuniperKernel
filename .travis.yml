@@ -39,8 +39,7 @@ before_install:
   - chmod 755 ./travis-tool.sh
   - ./travis-tool.sh bootstrap
 
-install:
-  - ./travis-tool.sh install_deps
+install: true
 
 script:
   - git clone git://github.com/zeromq/libzmq.git
@@ -48,6 +47,7 @@ script:
   - chmod 755 make_libzmq_osx.sh
   - ./make_libzmq_osx.sh
   - ./travis-tool.sh install_github snoweye/pbdZMQ
+  - ./travis-tool.sh install_deps
   # - g++ --version
   - make install
   # - make check
