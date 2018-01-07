@@ -28,7 +28,6 @@ src/*zip
 src/*gz
 inst/include/xtl
 inst/include/xeus
-inst/include/zmq*
 src/Makevars
 .travis.yml
 appveyor.yml
