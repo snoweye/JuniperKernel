@@ -15,6 +15,7 @@ branches:
   only:
     - master
     - osx
+    - osx_static
 
 # addons:
 #   apt:
