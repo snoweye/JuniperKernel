@@ -9,7 +9,7 @@ PBD_ZMQ=`${RSCRIPT} -e "cat(system.file(package='pbdZMQ'))"`
 # if [[ `uname` == 'Darwin' ]]; then
 #   ZMQ_LDFLAGS=`${RSCRIPT} -e "pbdZMQ::get.zmq.ldflags()"`
 # fi
-ZMQ_CPPLAGS=`${RSCRIPT} -e "pbdZMQ::get.zmq.cppflags()"`
+ZMQ_CPPFLAGS=`${RSCRIPT} -e "pbdZMQ::get.zmq.cppflags()"`
 ZMQ_LDFLAGS=`${RSCRIPT} -e "pbdZMQ::get.zmq.ldflags()"`
 
 sed -e "s|@ZMQ_CPPFLAGS@|${ZMQ_CPPFLAGS}|" -e "s|@ZMQ_LDFLAGS@|${ZMQ_LDFLAGS}|" src/Makevars.in > src/Makevars
