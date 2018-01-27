@@ -44,15 +44,13 @@
                      " ", fn.so,
                      sep = "")
         system(cmd)
-
-        dyn.load(new.fn.dylib, local = FALSE)
-      } else{
-        dyn.load(fn.dylib, local = FALSE)
       }
     }
-
-    ### Load "pkgname.so".
-    library.dynam("JuniperKernel", pkgname, libname)
   }
+
+  ### Load "pkgname.so".
+  library.dynam("JuniperKernel", pkgname, libname)
+
+  invisible()
 } # End of .onLoad().
 
