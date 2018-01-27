@@ -52,6 +52,14 @@ script:
   - ./travis-tool.sh install_deps
   # - g++ --version
   - make install
+  - mkdir Rlib
+  - mv /Library/Frameworks/R.framework/Versions/3.4/Resources/library/pbdZMQ Rlib/
+  - mv /Library/Frameworks/R.framework/Versions/3.4/Resources/library/JuniperKernel Rlib/
+  - export R_LIBS_USER=`pwd`/Rlib
+  - otool -D ./Rlib/pbdZMQ/libs/libzmq.5.dylib
+  - otool -L ./Rlib/JuniperKernel/libs/JuniperKernel.so
+  - Rscript -e "library(JuniperKernel)"
+  - otool -L ./Rlib/JuniperKernel/libs/JuniperKernel.so
   # - make check
   - ls -la
   - pwd
