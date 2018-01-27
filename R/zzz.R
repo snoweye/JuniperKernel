@@ -18,14 +18,8 @@
 .onAttach <- function(lib, pkg) {}
 
 .onLoad <- function(libname, pkgname){
-print(c(libname, pkgname))
-  dn.pbdZMQ <- tools::file_path_as_absolute(
-                 system.file("./libs", package = "pbdZMQ")) 
-print(dn.pbdZMQ)
-return(invisible())
-
   ### For osx only.
-  if(Sys.info()[['sysname']] == "Darwin") {
+  if(Sys.info()[['sysname']] == "Darwin"){
     cmd.int <- system("which install_name_tool", intern = TRUE)
     cmd.ot <- system("which otool", intern = TRUE)
 
@@ -38,33 +32,27 @@ return(invisible())
     pattern <- paste("^\\t(.*/pbdZMQ/libs/libzmq.*\\.dylib) .*$", sep = "")
     i.rpath <- grep(pattern, rpath)
     fn.dylib <- gsub(pattern, "\\1", rpath[i.rpath])
-
-    ### Do nothing if the dylib file exists at which rpath points.
-    ### Overwrite with one searched from path if the dylib file does not exist.
-    if(length(fn.dylib) == 1) {
-      if(!file.exists(fn.dylib)) {
-        fn <- list.files(path = dn.pbdZMQ, pattern = "libzmq.*\\.dylib")
-        new.fn.dylib <- paste(dn.pbdZMQ, "/", fn, sep = "")
+    if(length(fn.dylib) == 1){
+      if(!file.exists(fn.dylib)){
+        ### Overwrite with one searched from path if the dylib does not exist.
+        dn <- tools::file_path_as_absolute(
+                system.file("./libs", package = "pbdZMQ")) 
+        fn <- list.files(path = dn, pattern = "libzmq.*\\.dylib")
+        new.fn.dylib <- paste(dn, "/", fn, sep = "")
 
         cmd <- paste(cmd.int, " -change ", fn.dylib, " ", new.fn.dylib,
                      " ", fn.so,
                      sep = "")
         system(cmd)
+
+        dyn.load(new.fn.dylib, local = FALSE)
+      } else{
+        dyn.load(fn.dylib, local = FALSE)
       }
     }
+
+    ### Load "pkgname.so".
+    library.dynam("JuniperKernel", pkgname, libname)
   }
-
-  ### Load "pbdZMQ/libs/libzmq.*"
-  fn <- list.files(path = dn.pbdZMQ, pattern = "libzmq\\..*")
-  i.file <- paste(dn.pbdZMQ, "/", fn, sep = "")
-  test <- try(dyn.load(i.file, local = FALSE), silent = TRUE)
-  if(class(test) == "try-error"){
-    stop(paste("Could not load ", i.file, ":",
-               paste(test, collapse = ", "), sep = " "))
-  }
-
-  ### Load "pkgname.so".
-  library.dynam("JuniperKernel", pkgname, libname)
-
-  invisible()
 } # End of .onLoad().
+
