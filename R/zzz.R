@@ -16,9 +16,13 @@
 # along with JuniperKernel.  If not, see <http://www.gnu.org/licenses/>.
 
 .onAttach <- function(lib, pkg) {}
-.onLoad   <- function(lib, pkg) {
+
+.onLoad <- function(libname, pkgname){
+print(c(libname, pkgname))
   dn.pbdZMQ <- tools::file_path_as_absolute(
                  system.file("./libs", package = "pbdZMQ")) 
+print(dn.pbdZMQ)
+return(invisible())
 
   ### For osx only.
   if(Sys.info()[['sysname']] == "Darwin") {
@@ -26,7 +30,7 @@
     cmd.ot <- system("which otool", intern = TRUE)
 
     ### Get rpath from pkg's shared library.
-    fn.so <- paste(lib, "/", pkg, "/libs/", pkg, ".so", sep = "")
+    fn.so <- paste(libname, "/", pkgname, "/libs/", pkgname, ".so", sep = "")
     rpath <- system(paste(cmd.ot, " -L ", fn.so, sep = ""),
                     intern = TRUE)
 
@@ -50,18 +54,17 @@
     }
   }
 
-  ### Load "libzmq*"
+  ### Load "pbdZMQ/libs/libzmq.*"
   fn <- list.files(path = dn.pbdZMQ, pattern = "libzmq\\..*")
   i.file <- paste(dn.pbdZMQ, "/", fn, sep = "")
-  print(i.file)
   test <- try(dyn.load(i.file, local = FALSE), silent = TRUE)
   if(class(test) == "try-error"){
     stop(paste("Could not load ", i.file, ":",
                paste(test, collapse = ", "), sep = " "))
   }
 
-  ### Load "pkg.so".
-  library.dynam(pkg, pkg, lib)
+  ### Load "pkgname.so".
+  library.dynam("JuniperKernel", pkgname, libname)
 
   invisible()
 } # End of .onLoad().
