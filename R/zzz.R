@@ -53,6 +53,7 @@
   ### Load "libzmq*"
   fn <- list.files(path = dn.pbdZMQ, pattern = "libzmq\\..*")
   i.file <- paste(dn.pbdZMQ, "/", fn, sep = "")
+  print(i.file)
   test <- try(dyn.load(i.file, local = FALSE), silent = TRUE)
   if(class(test) == "try-error"){
     stop(paste("Could not load ", i.file, ":",
