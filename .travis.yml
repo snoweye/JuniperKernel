@@ -62,7 +62,7 @@ script:
   - mv /Library/Frameworks/R.framework/Versions/3.4/Resources/library/pbdZMQ Rlib/
   - mv /Library/Frameworks/R.framework/Versions/3.4/Resources/library/JuniperKernel Rlib/
   - export R_LIBS_USER=`pwd`/Rlib
-  - otool -D ./Rlib/pbdZMQ/libs/libzmq.5.dylib
+  #- otool -D ./Rlib/pbdZMQ/libs/libzmq.5.dylib
   - otool -L ./Rlib/JuniperKernel/libs/JuniperKernel.so
   # - install_name_tool -change /Library/Frameworks/R.framework/Versions/3.4/Resources/library/pbdZMQ/libs/libzmq.5.dylib /Users/travis/build/snoweye/JuniperKernel/Rlib/pbdZMQ/libs/libzmq.5.dylib ./Rlib/JuniperKernel/libs/JuniperKernel.so
   - Rscript -e "library(JuniperKernel)"
