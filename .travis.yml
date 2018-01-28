@@ -48,8 +48,8 @@ script:
   - curl -OL http://raw.github.com/snoweye/libzmq_osx/master/make_libzmq_osx.sh
   - chmod 755 make_libzmq_osx.sh
   - ./make_libzmq_osx.sh
-  - ./travis-tool.sh install_github snoweye/pbdZMQ
   - ./travis-tool.sh install_deps
+  - ./travis-tool.sh install_github snoweye/pbdZMQ
   # - g++ --version
   - make install
   - mkdir Rlib
