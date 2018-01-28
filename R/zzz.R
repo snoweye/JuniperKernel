@@ -16,4 +16,11 @@
 # along with JuniperKernel.  If not, see <http://www.gnu.org/licenses/>.
 
 .onAttach <- function(lib, pkg) {}
-.onLoad   <- function(lib, pkg) {}
+
+.onLoad <- function(lib, pkg) {
+  pbdZMQ::overwrite.shpkg.rpath(mylib = lib, mypkg = pkg, linkingto = "pbdZMQ",
+                                shlib = "zmq")
+  library.dynam("JuniperKernel", pkg, lib)
+  invisible()
+} # End of .onLoad().
+
