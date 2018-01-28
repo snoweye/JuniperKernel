@@ -52,9 +52,6 @@ script:
   - ./travis-tool.sh install_deps
   # - g++ --version
   - make install
-  - mkdir tmp
-  - cd tmp; tar zxvf ../build/JuniperKernel*.tar.gz; cat JuniperKernel/R/zzz.R; cd ../
-  - rm -rf tmp
   - mkdir Rlib
   - mv /Library/Frameworks/R.framework/Versions/3.4/Resources/library/pbdZMQ Rlib/
   - mv /Library/Frameworks/R.framework/Versions/3.4/Resources/library/JuniperKernel Rlib/
