@@ -1,4 +1,4 @@
-// Copyright (C) 2017  Spencer Aiello
+// Copyright (C) 2017-2018  Spencer Aiello
 //
 // This file is part of JuniperKernel.
 //
@@ -19,7 +19,7 @@
 
 #include <fstream>
 #include <string>
-#include <xeus/nl_json.hpp>
+#include <nlohmann/json.hpp>
 #include <zmq.hpp>
 // ERROR defined in zmq.hpp, but we want
 // the one from Rcpp
@@ -32,6 +32,8 @@
 #define LINGER 1000 // number of millis to linger for
 #define INPROC_PUB "inproc://pub"
 #define INPROC_SIG "inproc://sig"
+#define INPROC_OUT_PUB "inproc://outpub"
+#define INPROC_ERR_PUB "inproc://errpub"
 
 using nlohmann::json;
 struct config {

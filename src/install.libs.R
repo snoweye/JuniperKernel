@@ -7,7 +7,10 @@ if(length(files) > 0){
   libsarch <- if (nzchar(R_ARCH)) paste("libs", R_ARCH, sep='') else "libs"
   dest <- file.path(R_PACKAGE_DIR, libsarch)
   dir.create(dest, recursive = TRUE, showWarnings = FALSE)
+  print(paste("copying from", files, "TO", dest))
   file.copy(files, dest, overwrite = TRUE, recursive = TRUE)
+  print(list.files(dest))
+  print(paste("R ARCH:", R_ARCH))
 
   ### For Mac OSX:
   ### Overwrite RPATH from the shared library installed to the destination.

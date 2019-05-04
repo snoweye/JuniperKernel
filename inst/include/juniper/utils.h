@@ -1,4 +1,4 @@
-// Copyright (C) 2017  Spencer Aiello
+// Copyright (C) 2017-2018  Spencer Aiello
 //
 // This file is part of JuniperKernel.
 //
@@ -17,7 +17,8 @@
 #ifndef juniper_juniper_utils_H
 #define juniper_juniper_utils_H
 #include <string>
-#include <xeus/nl_json.hpp>
+#include <ctime>
+#include <nlohmann/json.hpp>
 #include <zmq.hpp>
 #include <Rcpp.h>
 
@@ -41,21 +42,47 @@ static json from_sexp(SEXP s) {
 
 // recursive parse a List into a json
 static json from_list_r(Rcpp::List lst) {
-  if( lst.size()==0 ) return {};
-  std::vector<std::string> names = lst.names();
+  if( lst.size()==0 ) return json::object();
+  bool nonames = TYPEOF(lst.attr("names")) == NILSXP;
+  std::vector<std::string> names;
+  if( !nonames ) {
+    std::vector<std::string> names_attr = lst.names();
+    names = names_attr; // copies
+  }
   json j;
   int i=0;
   for( Rcpp::List::iterator it = lst.begin(); it!=lst.end(); ++it ) {
     switch( TYPEOF(*it) ) {
-    case NILSXP:  { j[names.at(i++)] = nullptr;                         break; }
-    case INTSXP:  { j[names.at(i++)] = from_sexp<INTSXP,  int>(*it);    break; }
-    case REALSXP: { j[names.at(i++)] = from_sexp<REALSXP, double>(*it); break; }
-    case LGLSXP:  { j[names.at(i++)] = from_sexp<LGLSXP,  bool>(*it);   break; }
-    case VECSXP:  { j[names.at(i++)] = from_list_r(*it);                break; }
+    case NILSXP:  { if( nonames ) j.push_back(nullptr); else j[names.at(i++)] = nullptr; break; }
+    case INTSXP:  {
+      json tmp = from_sexp<INTSXP, int>(*it);
+      if( nonames ) j.push_back(tmp);
+      else          j[names.at(i++)] = tmp;
+      break;
+    }
+    case REALSXP: {
+      json tmp = from_sexp<REALSXP, double>(*it);
+      if( nonames ) j.push_back(tmp);
+      else          j[names.at(i++)] = tmp;
+      break;
+    }
+    case LGLSXP: {
+      json tmp = from_sexp<LGLSXP, bool>(*it);
+      if( nonames ) j.push_back(tmp);
+      else          j[names.at(i++)] = tmp;
+      break;
+    }
+    case VECSXP: {
+      json tmp = from_list_r(*it);
+      if( nonames ) j.push_back(tmp);
+      else          j[names.at(i++)] = tmp;
+      break;
+    }
     case STRSXP: {
       Rcpp::StringVector tmp = Rcpp::as<Rcpp::StringVector>(*it);
       if( tmp.size()==1 ) {
-        j[names.at(i++)] = Rcpp::as<std::string>(*it);
+        if( nonames ) j.push_back(Rcpp::as<std::string>(*it));
+        else          j[names.at(i++)] = Rcpp::as<std::string>(*it);
       } else {
         std::vector<std::string> chars;
         std::string skip = "__juniper_vec_ignore_hack__";
@@ -63,7 +90,8 @@ static json from_list_r(Rcpp::List lst) {
           if( !skip.compare(*ii) ) continue;
           chars.emplace_back(*ii);
         }
-        j[names.at(i++)] = chars;
+        if( nonames ) j.push_back(chars);
+        else          j[names.at(i++)] = chars;
       }
       break;
     }
@@ -154,4 +182,15 @@ static std::string read_str(const zmq::message_t& msg) {
     ss << static_cast<char>(buf[i]);
   return ss.str();
 }
+ 
+static std::string now() {
+  time_t now;
+  time(&now);
+  char buf[sizeof "2011-10-08T07:07:09Z"];
+	//  size_t sz = strftime(buf, sizeof buf, "%FT%TZ", gmtime(&now));
+  // this will work too, if your compiler doesn't support %F or %T:
+  strftime(buf, sizeof buf, "%Y-%m-%dT%H:%M:%SZ", gmtime(&now));
+	return buf;
+}
+
 #endif // #ifndef juniper_juniper_utils_H

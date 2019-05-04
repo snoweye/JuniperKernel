@@ -1,10 +1,29 @@
 **If you are viewing this file on CRAN, please check latest news on GitHub [here](https://github.com/JuniperKernel/JuniperKernel/blob/master/NEWS.md).**
 
-### Changes in v1.2.3.0
+### Changes in v1.4.1.0
 
 #### PATCHES
 
-1. Provides an `.onLoad` implementation that will search for a externally installed zeromq library. This method is provided by Wei-Chen Chen (@snoweye).
+1. Build a windows interrupt handler that will listen to a Windows Event set by a parent process.
+2. Fix NPE caused during comm_info_request due to malformed comm_info_reply object.
+
+### Changes in v1.4.0.0 (on CRAN 04/23/2018)
+
+1. Add ability to change the default device settings as well as toggle it on/off.
+2. Proper handling of warning messages.
+3. Help is shown as a pager element and no longer clutters the notebook client.
+
+### Bug Fixes
+
+* Fix Rcpp::List -> json recursive utility. Before this was failing when lists were unnamed.
+* Fix history_request implementation so that the interactive console may function properly.
+
+### Changes in v1.2.3.0 (on CRAN 02/05/2018)
+
+#### PATCHES
+
+
+1. Point to pbdZMQ R package version 0.3-2. Provides an `.onLoad` implementation that will search for a externally installed zeromq library. This method is provided by Wei-Chen Chen (@snoweye).
 
 ### Changes in v1.2.2.0 (on CRAN 01/16/2018)
 

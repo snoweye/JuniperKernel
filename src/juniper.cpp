@@ -1,4 +1,4 @@
-// Copyright (C) 2017  Spencer Aiello
+// Copyright (C) 2017-2018  Spencer Aiello
 //
 // This file is part of JuniperKernel.
 //
@@ -20,7 +20,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <xeus/nl_json.hpp>
+#include <nlohmann/json.hpp>
 #include <juniper/conf.h>
 #include <zmq.h>
 #include <zmq.hpp>
@@ -62,12 +62,12 @@ static void xmockFinalizer(SEXP xm) {
   }
 }
 
-
 static JuniperKernel* get_kernel(SEXP kernel) {
   return reinterpret_cast<JuniperKernel*>(R_ExternalPtrAddr(kernel));
 }
 
 xmock* _xm;
+SEXP R_xm = nullptr;
 // [[Rcpp::export]]
 SEXP init_kernel(const std::string& connection_file) {
   JuniperKernel* jk = JuniperKernel::make(connection_file);
@@ -83,12 +83,9 @@ SEXP init_kernel(const std::string& connection_file) {
 }
 
 // [[Rcpp::export]]
-void boot_kernel(SEXP kernel) {
+SEXP boot_kernel(SEXP kernel, int interrupt_event) {
   JuniperKernel* jk = get_kernel(kernel);
-  jk->start_bg_threads();
-  jk->run();
-  if( _xm!=nullptr )
-    delete _xm;
+  return jk->start_bg_threads(interrupt_event);
 }
 
 //' The XMock
@@ -101,19 +98,21 @@ void boot_kernel(SEXP kernel) {
 //' @export
 // [[Rcpp::export]]
 SEXP the_xmock() {
-  if( _xm==nullptr )
-    Rcpp::stop("no xmock available.");
-  return createExternalPointer<xmock>(_xm, xmockFinalizer, "xmock*");
+  if( _xm )
+    return R_xm ? (R_xm = createExternalPointer<xmock>(_xm, xmockFinalizer, "xmock*")) : R_xm;
+  Rcpp::stop("no xmock available.");
 }
 
 // [[Rcpp::export]]
-void stream_stdout(SEXP kernel, const std::string& output) {
-  get_kernel(kernel)->_request_server->stream_out(output);
+SEXP sock_recv(SEXP kernel, std::string sockName) {
+  JuniperKernel* jk = get_kernel(kernel);
+  return jk->recv(sockName);
 }
 
 // [[Rcpp::export]]
-void stream_stderr(SEXP kernel, const std::string& err) {
-  get_kernel(kernel)->_request_server->stream_err(err);
+void post_handle(SEXP kernel, Rcpp::List res, std::string sockName) {
+  JuniperKernel* jk = get_kernel(kernel);
+  jk->post_handle(res, sockName);
 }
 
 // [[Rcpp::export]]
@@ -150,9 +149,8 @@ SEXP filter_comms(std::string target_name) {
 // [[Rcpp::export]]
 void comm_request(const std::string type) {
   xmock& xm = get_xmock();
-  JMessage jm = xm._jk->_request_server->_cur_msg;
-
-  xmessage xmsg = to_xmessage(jm.get(), jm.ids());
+  JMessage* jm = &xm._jk->_request_server->_cur_msg;
+  xmessage xmsg(to_xmessage(jm->get(), jm->ids(), std::move(jm->bufs())));
   if( type=="open" ) xm.comm_manager().comm_open( xmsg);
   if( type=="close") xm.comm_manager().comm_close(xmsg);
   if( type=="msg"  ) xm.comm_manager().comm_msg(  xmsg); 

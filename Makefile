@@ -1,4 +1,3 @@
-#SHELL := /bin/bash
 .DELETE_ON_ERROR:
 
 # for printing variable values
@@ -6,7 +5,7 @@
 #        > VARIABLE = value_of_variable
 print-%  : ; @echo $*=$($*)
 
-PKG_VERSION=1.2.3.0
+PKG_VERSION=1.4.2.0
 
 R_BUILD_ARGS= --no-manual --no-build-vignettes
 R_CHECK_ARGS= --no-manual --no-build-vignettes --as-cran
@@ -17,12 +16,12 @@ RSCRIPT=$(R_HOME)/bin/Rscript
 
 #quantstack bacon bits
 # xtl
-XTL_VERSION = 0.4.0
+XTL_VERSION = 0.4.16
 XTL_TAR_FILE = ${XTL_VERSION}.tar.gz
 XTL_URL = https://github.com/QuantStack/xtl/archive/${XTL_TAR_FILE}
 
 # xeus
-XEUS_VERSION = 0.9.0
+XEUS_VERSION = 0.14.1
 XEUS_TAR_FILE = ${XEUS_VERSION}.tar.gz
 XEUS_URL = https://github.com/QuantStack/xeus/archive/${XEUS_TAR_FILE}
 
@@ -37,8 +36,13 @@ build/JuniperKernel_$(PKG_VERSION).tar.gz: $(wildcard R/*R) $(wildcard src/*cpp)
 	@mv JuniperKernel_$(PKG_VERSION).tar.gz build/
 
 #.PHONY: install
-install: build/JuniperKernel_$(PKG_VERSION).tar.gz
+install: install_roxygen2_5 build/JuniperKernel_$(PKG_VERSION).tar.gz
 	@(cd build && R CMD INSTALL JuniperKernel_$(PKG_VERSION).tar.gz)
+
+install_roxygen2_5:
+	@echo "Installing roxygen 6.0.1..."
+	@$(RSCRIPT) -e "install.packages('devtools', repos='http://cran.rstudio.com')"
+	@$(RSCRIPT) -e "devtools::install_version('roxygen2', version='6.0.1', repos='http://cran.rstudio.com')"
 
 headers: ./inst/include/xtl ./inst/include/xeus
 
@@ -57,7 +61,6 @@ headers: ./inst/include/xtl ./inst/include/xeus
 	@tar -xzf ${XEUS_TAR_FILE}
 	@mv xeus-${XEUS_VERSION}/include/xeus ./inst/include
 	@rm -rf xeus-${XEUS_VERSION} ${XEUS_TAR_FILE}
-	@cp ./inst/nl_json.hpp ./inst/include/xeus/nl_json.hpp
 
 check: build/JuniperKernel_$(PKG_VERSION).tar.gz
 	@echo "running R CMD check"
@@ -87,6 +90,6 @@ clean:
 	rm -rf src/._*
 	rm -rf src/x64
 	rm -rf inst/._*
-	rm -rf *.ipynb*
+	rm -rf *ipynb*
 	rm -rf inst/libs
 	rm -rf src-*

@@ -1,4 +1,4 @@
-# Copyright (C) 2017  Spencer Aiello
+# Copyright (C) 2017-2018  Spencer Aiello
 #
 # This file is part of JuniperKernel.
 #
@@ -40,6 +40,10 @@
 #'
 #' @export
 comm_info_request <- function(request_msg) {
-  target <- ifelse(is.null(request_msg$target), "", request_msg$target_name)
-  list(msg_type = "comm_info_reply", content = filter_comms(target))
+  target <- request_msg$target_name
+  comms <- {
+    if( is.null(target) ) list(status="ok", comms=NULL)
+    else                  filter_comms(target)
+  }
+  list(msg_type = "comm_info_reply", content = comms)
 }

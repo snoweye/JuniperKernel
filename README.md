@@ -18,6 +18,12 @@ The development of JuniperKernel is sponsored by [Bloomberg](https://www.techatb
 > installJuniper(useJupyterDefault = TRUE)  # install into default Jupyter kernel location
 ```
 
+## Install via Conda
+
+Availability is architecture dependent, [see](https://anaconda.org/conda-forge/r-juniperkernel/files):
+* `conda install -c conda-forge r-juniperkernel` or
+* `conda install -c conda-forge/label/gcc7 r-juniperkernel`
+
 ## Building
 
 ##### Requirements
@@ -27,7 +33,7 @@ The development of JuniperKernel is sponsored by [Bloomberg](https://www.techatb
 
 If you're going to build from scratch, then these packages will be necessary to fetch:
  
-- R packages: BH,  Rcpp (>= 0.11.0), gdtools (>= 0.1.6), pbdZMQ (>= 0.3-0), roxygen2, jsonlite, repr
+- R packages: BH,  Rcpp (>= 0.11.0), gdtools (>= 0.1.6), pbdZMQ (>= 0.3-0), roxygen2, jsonlite, repr, data.table
 
 Other necessary bacon bits (fetched automatically--c.f. Makevars/Makevars.win):
 

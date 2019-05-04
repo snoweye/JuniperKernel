@@ -1,4 +1,4 @@
-# Copyright (C) 2017  Spencer Aiello
+# Copyright (C) 2017-2018  Spencer Aiello
 #
 # This file is part of JuniperKernel.
 #
@@ -66,19 +66,36 @@
 #'
 #' @export
 doRequest <- function(handler, request_msg) {
-  out <- socketConnection("localhost", port=request_msg$stream_out_port)
-  err <- socketConnection("localhost", port=request_msg$stream_err_port)
+  out <- socketConnection("localhost", port=request_msg$stream_out_port, open='w')
+  err <- socketConnection("localhost", port=request_msg$stream_err_port, open='w')
   sink(out, type="output")
   sink(err, type="message")
-  aliases <- list(system=list(sans="Arial", serif="Times", mono="Courier", symbol="Symbol"), user=list())
-  jk_device(.kernel(), "white", 10, 5, 12, FALSE, aliases)
-  dev <- grDevices::dev.cur()
+  dev <- {
+    if( is.null(.JUNIPER$jkdopts) )
+      JuniperKernel::jk_device_settings()
+
+    if( .JUNIPER$jkdopts$device_off ) {
+      NULL
+    } else {
+      jk_device( .kernel()
+                , .JUNIPER$jkdopts$bg
+                , .JUNIPER$jkdopts$w
+                , .JUNIPER$jkdopts$h
+                , .JUNIPER$jkdopts$ps
+                , FALSE
+                , .JUNIPER$jkdopts$aliases)
+      grDevices::dev.cur()
+    }
+  }
   tryCatch(
       return(handler(request_msg))
     , finally={
-        sink(type="message"); close(err);
-        sink(type="output" ); close(out);
-        grDevices::dev.off(dev)
+        sink(type="message")
+        sink(type="output" )
+        close(err)
+        close(out)
+        if(!is.null(dev) )
+          grDevices::dev.off(dev)
       }
   )
 }

@@ -1,4 +1,4 @@
-// Copyright (C) 2017  Spencer Aiello
+// Copyright (C) 2017-2018  Spencer Aiello
 //
 // This file is part of JuniperKernel.
 //
@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <zmq.h>
 #include <zmq.hpp>
-#include <xeus/nl_json.hpp>
+#include <nlohmann/json.hpp>
 #include <juniper/sockets.h>
 #include <juniper/utils.h>
 #include <juniper/jmessage.h>

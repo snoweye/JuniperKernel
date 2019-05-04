@@ -6,8 +6,6 @@ dist: trusty
 branches:
   only:
     - master
-    - osx
-    - osx_static
 
 addons:
   apt:
@@ -29,9 +27,15 @@ env:
 before_install:
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60 --slave /usr/bin/g++ g++ /usr/bin/g++-6
 
+r_packages:
+  - devtools
+  - pbdZMQ
+
 script:
-  - Rscript -e "devtools::install_github('snoweye/pbdZMQ')"
+  - ls -la `R RHOME`/etc
+  - cat `R RHOME`/etc/Makeconf
   - g++ --version
+  - ls -la
   - make install
   - make check
   - make test
@@ -43,6 +47,9 @@ before_deploy:
   - pwd
 
 after_failure:
+  - ls -la
+  - ls -la src
+  - ls -la build
   - cat ./JuniperKernel.Rcheck/00install.out
   - ldd ./src/JuniperKernel.so
   - ls -la ./inst/zmq

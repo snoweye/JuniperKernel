@@ -18,7 +18,7 @@
 //  along with this program; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-// Copyright (C) 2017  Spencer Aiello
+// Copyright (C) 2017-2018  Spencer Aiello
 //
 //   This is a fork of the svglite c++ source with customized callbacks for JuniperKernel.
 //   To differentiate, the device description class is renamed to JKDesc from SVGDesc.
@@ -56,7 +56,7 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
-#include <xeus/nl_json.hpp>
+#include <nlohmann/json.hpp>
 #include <juniper/juniper.h>
 
 double dbl_format(double x) { return std::abs(x) < 0.01 ? 0.00 : x; }
